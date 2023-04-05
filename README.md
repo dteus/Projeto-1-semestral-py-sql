@@ -16,7 +16,7 @@ As bibliotecas que vamos utilizar no Python, a princípio, são:
 - Numpy;
 
 Como bando de dados:
-- Ludicdchart para modelagem lógica;
+- Db Design para modelagem lógica;
 - MySql;
 
 ## Equipe
