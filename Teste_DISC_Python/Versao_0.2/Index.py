@@ -2,6 +2,9 @@
 #tkinter -> Interface Gráfica
 #tkinter ttk -> funcão do tkinter para facilitar a escrita
 #datetime -> Registro de Horário
+#PIL -> Configurações para trabalhar com imagens
+#DataBaser -> Nome do arquivo de banco de dados
+#Hashlib -> Codificador de senhas
 from tkinter import *
 from tkinter import messagebox
 from PIL import Image
@@ -20,29 +23,29 @@ janela.geometry("900x600")
 janela.configure(background="Black")
 janela.resizable(width=False, height=False)
 #Carregando imagems
-logo = (Image.open("Logo.png"))
+logo = (Image.open("bio_logo.png"))
 
 #Widgets
-LeftFrame = Frame(janela, width=350, height= 600, bg="#134f28", relief="raised")
+LeftFrame = Frame(janela, width=350, height= 600, bg="#174da3", relief="raised")
 LeftFrame.pack(side=LEFT)
 
-Rightrame = Frame(janela, width=540, height= 600, bg="#134f28", relief="raised")
+Rightrame = Frame(janela, width=540, height= 600, bg="#174da3", relief="raised")
 Rightrame.pack(side=RIGHT)
 
 #Resize Image usando TKIMAGE
-resized_image= logo.resize((300,205), Image.ANTIALIAS)
+resized_image= logo.resize((200,350), Image.ANTIALIAS)
 new_image= ImageTk.PhotoImage(resized_image)
 
-LogoLabel = Label(LeftFrame, image=new_image, bg="#134f28")
-LogoLabel.place(x=0, y=240)
+LogoLabel = Label(LeftFrame, image=new_image, bg="#174da3")
+LogoLabel.place(x=70, y=100)
 
-UserLabel = Label(Rightrame, text="Login:", font=('Gothic',20), bg="#134f28", fg="White" )
+UserLabel = Label(Rightrame, text="Login:", font=('Gothic',20), bg="#174da3", fg="White" )
 UserLabel.place(x=5, y=270)
 
 UserEntry = ttk.Entry(Rightrame, width=20)
 UserEntry.place(x=125,y=285)
 
-PassLabel = Label(Rightrame, text="Senha:", font=('Gothic',20), bg="#134f28", fg="White")
+PassLabel = Label(Rightrame, text="Senha:", font=('Gothic',20), bg="#174da3", fg="White")
 PassLabel.place(x=5, y=320)
 
 
@@ -66,7 +69,7 @@ def Login():
     #Tentativa de login
     try:
         if(Login in VerifyLogin and Senha in VerifyLogin):
-            messagebox.showinfo(title="Logado!", message="Ta dentro meu parceiro!!!")
+            messagebox.showinfo(title="Logado!", message="Ta dentro meu parceiro!!!")    
     except:
             messagebox.showinfo(title="Ohh não!!!", message='Login ou Senha inválidos')
 
@@ -81,31 +84,31 @@ def Register():
     LoginButton.place(x=5000)
     RegisterButton.place(x=5000)
     # Inserindo widget cadastro
-    RALabel = Label(Rightrame, text='RA:', font=("Century Gothic", 20), bg="#134f28", fg="White")
+    RALabel = Label(Rightrame, text='RA:', font=("Century Gothic", 20), bg="#174da3", fg="White")
     RALabel.place(x=5,y=25)
     
     RAEntry = ttk.Entry(Rightrame, width=30)
     RAEntry.place(x=125,y=35)
 
-    NomeLabel = Label(Rightrame, text='Nome:', font=("Century Gothic", 20), bg="#134f28", fg="White")
+    NomeLabel = Label(Rightrame, text='Nome:', font=("Century Gothic", 20), bg="#174da3", fg="White")
     NomeLabel.place(x=5,y=75)
 
     NomeEntry = ttk.Entry(Rightrame, width=30)
     NomeEntry.place(x=125,y=80)
 
-    CPFLabel = Label(Rightrame, text='CPF:', font=("Century Gothic", 20), bg="#134f28", fg="White")
+    CPFLabel = Label(Rightrame, text='CPF:', font=("Century Gothic", 20), bg="#174da3", fg="White")
     CPFLabel.place(x=5,y=125)
 
     CPFEntry = ttk.Entry(Rightrame, width=30)
     CPFEntry.place(x=125,y=130)
 
-    EmailLabel = Label(Rightrame, text='Email:', font=("Century Gothic", 20), bg="#134f28", fg="White")
+    EmailLabel = Label(Rightrame, text='Email:', font=("Century Gothic", 20), bg="#174da3", fg="White")
     EmailLabel.place(x=5,y=175)
 
     EmailEntry = ttk.Entry(Rightrame, width=45)
     EmailEntry.place(x=125,y=180)
 
-    CursoLabel = Label(Rightrame, text='Curso:', font=("Century Gothic", 20), bg="#134f28", fg="White")
+    CursoLabel = Label(Rightrame, text='Curso:', font=("Century Gothic", 20), bg="#174da3", fg="White")
     CursoLabel.place(x=5,y=215)
 
     CursoBox = ttk.Combobox(Rightrame, values=Lista_Cursos)
@@ -119,10 +122,23 @@ def Register():
         Curso = CursoBox.get()
         Login = UserEntry.get()
         Senha = PassEntry.get()
-
+        DataBaser.c.execute("""
+        SELECT Login, RA, CPF, Email FROM ALUNOS
+        WHERE Login = ? and RA = ? and CPF = ? and Email = ?
+       """, (Login, RA, CPF, Email))
+        #Verifica os logins e senhas
+        VerifyLogin = DataBaser.c.fetchone()
         #Verificar Cadastro
-        if (RA == '' and Nome == '' and CPF =='' and Email=='' and Curso=='' and Login=='' and Senha==''):
+        if (RA == '' or Nome == '' or CPF =='' or Email=='' or Curso=='' or Login=='' or Senha==''):
             messagebox.showerror(title='Erro de Registro', message="Preencha todos os campos seu CABEÇÃO! ")
+        elif(VerifyLogin is not None and RA in VerifyLogin):
+            messagebox.showerror(title='Erro de Registro!', message="RA já cadastrado!")
+        elif(VerifyLogin is not None and CPF in VerifyLogin):
+            messagebox.showerror(title='Erro de Registro!', message="CPF já cadastrado!")
+        elif(VerifyLogin is not None and Login in VerifyLogin):
+            messagebox.showerror(title='Erro de Registro!', message="Loguin já cadastrado!")
+        elif(VerifyLogin is not None and Email in VerifyLogin):
+            messagebox.showerror(title='Erro de Registro!', message="Email Já cadastrado")
         else:
             DataBaser.c.execute("""
             INSERT INTO ALUNOS(RA, Nome, CPF, Email, Curso, Login, Senha) VALUES(?, ?, ?, ?, ?, ?, ?)
