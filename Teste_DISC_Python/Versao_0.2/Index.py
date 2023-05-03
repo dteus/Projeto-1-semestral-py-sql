@@ -11,7 +11,7 @@ from PIL import Image
 from PIL import ImageTk
 import tkinter.ttk as ttk
 import DataBaser 
-import hashlib
+from hashlib import sha256
 #-----------------------------------------------------------------------------------------------------------------------------------------
 
 Lista_Cursos = ["Ciências de dados", "Admnistração", "Analise e Desenvolvimento de Sistemas", "Engenharia de Software"]  
@@ -54,8 +54,6 @@ PassEntry.place(x=125,y=335)
 #Estilo do botao
 style_1 = {'fg': 'White', 'bg': '#011126', 'activebackground':
         '#8cbbfa', 'activeforeground': 'Black'}
-
-
 def Login():
     #Acessa Login e Senha
     Login = UserEntry.get()
@@ -122,6 +120,8 @@ def Register():
         Curso = CursoBox.get()
         Login = UserEntry.get()
         Senha = PassEntry.get()
+        #inserir no banco de dados a senha criptografada
+        Senha = len(sha256(b'0').hexdigest())
         DataBaser.c.execute("""
         SELECT Login, RA, CPF, Email FROM ALUNOS
         WHERE Login = ? and RA = ? and CPF = ? and Email = ?
