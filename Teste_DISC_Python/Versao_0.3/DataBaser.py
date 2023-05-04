@@ -1,0 +1,31 @@
+import sqlite3
+
+conexao = sqlite3.connect("Cadastro_Alunos.db")
+
+c = conexao.cursor()
+
+c.execute('''
+CREATE TABLE IF NOT EXISTS ALUNOS (
+    IDALUNO INTEGER AUTO INCREMENT
+    CPF TEXT NOT NULL,
+    RA INTEGER NOT NULL,
+    NOME TEXT NOT NULL,
+    EMAIL TEXT NOT NULL,
+    CURSO TEXT NOT NULL,
+    LOGIN TEXT NOT NULL,
+    SENHA TEXT NOT NULL,
+    PRIMARY KEY (IDALUNO))
+    ''')
+c.execute('''
+CREATE TABLE IF NOT EXISTS HISTORICO (
+    DATA_H TEXT NOT NULL,
+    DOMINANTE TEXT NOT NULL,
+    INFLUENTE TEXT NOT NULL,
+    ESTAVEL TEXT NOT NULL,
+    CONFORMADO TEXT NOT NULL,
+    ID_ALUNO TEXT REFERENCES ALUNOS(IDALUNO)ON DELETE CASCADE)
+    ''')
+
+print("Conectado ao banco de dados")
+
+
