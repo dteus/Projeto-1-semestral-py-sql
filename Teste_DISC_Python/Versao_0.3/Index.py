@@ -11,8 +11,59 @@ import ttkbootstrap as tb
 from PIL import Image, ImageTk
 import tkinter.ttk as ttk
 import DataBaser 
-from hashlib import sha256
-#--------------------------------------------FUNÇÕES DE LOGIN E REGISTRO------------------------------------------------------------------------------
+import bcrypt
+import sqlite3
+#--------------------------------------------FUNÇÕES DE LOGIN & REGISTRO  E VALIDAÇÕES------------------------------------------------------------------------------
+
+def validar_RA(input):
+    if len(input) > 8:
+        return False
+    elif input.isdigit():
+        return True 
+    
+    elif input == "":
+        return False
+
+    else:
+        return False
+    
+def validar_CPF(input):
+    if len(input) > 11:
+        return False
+    elif input.isdigit():
+        return True 
+    
+    elif input == "":
+        return False
+
+    else:
+        return False
+        
+def validar_Nome(input):
+    if (input.isalpha()+' '):
+        return True 
+    
+    elif input == "":
+        return False
+
+    else:
+        return False
+
+
+#Hash da senha
+def hash_password(password):
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_password.decode('utf-8')
+#Verificar Senha
+def validate_login(username, password):
+    if username not in DataBaser.c.execute("""select"""):
+        return False
+    
+    hashed_password = DataBaser[username].encode('utf-8')
+    print(f'senha testando{hashed_password} e {DataBaser[username]}')
+    return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
+
 # for Widgets in main_frame.winfo_children(): 
 #     Widgets.destroy()
 def main_page():
@@ -28,15 +79,15 @@ def main_page():
                         wraplength=500,
                         justify=LEFT)
     descricao.pack(pady=5,padx=10)
-
         
     entrar_button = tb.Button(main_frame,
                             text="Continuar",
                             bootstyle="primary-outline",
-                            command=lambda: Login()
+                            command=lambda: Pagina_Login()
                             )
     entrar_button.pack(padx=10,pady=10)
-def Login():
+
+def Pagina_Login():
     for widget in main_frame.winfo_children():
          widget.destroy()
     #Retira informações da tela
@@ -69,15 +120,9 @@ def Login():
         #Acessa Login e Senha
         Login = UserEntry.get()
         Senha = PassEntry.get()
-        DataBaser.c.execute("""
-        SELECT Login, Senha FROM ALUNOS
-        WHERE Login = ? and Senha = ?
-        """, (Login, Senha))
-        #Verifica os logins e senhas
-        VerifyLogin = DataBaser.c.fetchone()
         #Tentativa de login
         try:
-            if(Login in VerifyLogin and Senha in VerifyLogin):
+            if validate_login(Login, Senha) == True:
                 messagebox.showinfo(title="Logado!", message="Ta dentro meu parceiro!!!")    
         except:
                 messagebox.showerror(title="Ohh não!!!", message='Login ou Senha inválidos')
@@ -104,14 +149,14 @@ def Login():
     Registrar.grid(row=3,column=1,padx=10,pady=5)
 
 def Register():
+    #Retira informações da tela
     for widget in main_frame.winfo_children():
          widget.destroy()
-    #Retira informações da tela
     
-    # Frame que contem entry de login e senha
+    # Frame que contem entry de registro
     main_frame.configure(text="Registro")
     main_frame.place(x=350, y=50)
-#---------------------------------
+#---------------------------------  ENTRADA DE  RA
     RALabel = tb.Label(main_frame,
                     text="RA",
                     font="Matrix 12 bold"
@@ -120,7 +165,12 @@ def Register():
 
     RAEntry = tb.Entry(main_frame, bootstyle="primary")
     RAEntry.grid(row=1, column=1, padx=10, pady=10)
-#---------------------------------
+
+    reg = root.register(validar_RA)
+  
+    RAEntry.config(validate ="key", 
+         validatecommand =(reg, '%P'))
+#---------------------------------  ENTRADA DE   NOME 
     NomeLabel = tb.Label(main_frame,
                     text="Nome",
                     font="Matrix 12 bold")
@@ -128,7 +178,12 @@ def Register():
 
     NomeEntry = tb.Entry(main_frame, bootstyle="primary")
     NomeEntry.grid(row=2, column=1, padx=10, pady=10)
-#---------------------------------
+
+    reg = root.register(validar_Nome)
+  
+    NomeEntry.config(validate ="key", 
+         validatecommand =(reg, '%P'))
+#---------------------------------  ENTRADA DE CPF
     CPFLabel = tb.Label(main_frame,
                     text="CPF",
                     font="Matrix 12 bold")
@@ -136,7 +191,12 @@ def Register():
 
     CPFEntry = tb.Entry(main_frame, bootstyle="primary")
     CPFEntry.grid(row=3, column=1, padx=10, pady=10)
-#---------------------------------
+    
+    reg = root.register(validar_CPF)
+  
+    CPFEntry.config(validate ="key", 
+         validatecommand =(reg, '%P'))
+#---------------------------------    ENTRADA DE EMAIL
     EmailLabel = tb.Label(main_frame,
                     text="Email",
                     font="Matrix 12 bold")
@@ -144,7 +204,7 @@ def Register():
 
     EmailEntry = tb.Entry(main_frame, bootstyle="primary")
     EmailEntry.grid(row=4, column=1, padx=10, pady=10)
-  #---------------------------------  
+  #---------------------------------   ENTRADA DE CURSO
     CursoLabel = tb.Label(main_frame,
                     text="Curso",
                     font="Matrix 12 bold")
@@ -155,54 +215,48 @@ def Register():
                     font="Matrix 12 bold",
                     values=Lista_Cursos)
     CursoCombobox.grid(row=5, column=1, padx=10, pady=10)
-#---------------------------------
+#---------------------------------   ENTRADA DE USUARIO
     UserLabel = tb.Label(main_frame,
                     text="Usuario",
                     font="Matrix 12 bold")
     UserLabel.grid(row=6, column=0, padx=10, pady=10)
     UserEntry = tb.Entry(main_frame, bootstyle="primary")
     UserEntry.grid(row=6, column=1, padx=10, pady=10)
-#---------------------------------
+#---------------------------------    ENTRADA DE SENHA
     PassLabel = tb.Label(main_frame,
                     text="Senha",
                     font="Matrix 12 bold")
     PassLabel.grid(row=7, column=0, padx=10, pady=10)
     PassEntry = tb.Entry(main_frame, bootstyle="primary")
     PassEntry.grid(row=7, column=1, padx=10, pady=10)
-#---------------------------------
+#---------------------------------  FUNÇÃO QUE VERIFICA OS DADOS E OS REGISTRA NO BANCO
     def RegisterToDataBase():
         RA = RAEntry.get()
-        Nome = NomeEntry.get()
+        Nome = NomeEntry.get().upper()
         CPF = CPFEntry.get()
         Email = EmailEntry.get()
         Curso = CursoCombobox.get()
         Login = UserEntry.get()
         Senha = PassEntry.get()
-        #inserir no banco de dados a senha criptografada
-        Senha = len(sha256(b'0').hexdigest())
-        DataBaser.c.execute("""
-        SELECT Login, RA, CPF, Email FROM ALUNOS
-        WHERE Login = ? and RA = ? and CPF = ? and Email = ?
-       """, (Login, RA, CPF, Email))
-        #Verifica os logins e senhas
-        VerifyLogin = DataBaser.c.fetchone()
-        #Verificar Cadastro
-        if (RA == '' or Nome == '' or CPF =='' or Email=='' or Curso=='' or Login=='' or Senha==''):
-            messagebox.showerror(title='Erro de Registro', message="Preencha todos os campos seu CABEÇÃO! ")
-        elif(VerifyLogin is not None and RA in VerifyLogin):
-            messagebox.showerror(title='Erro de Registro!', message="RA já cadastrado!")
-        elif(VerifyLogin is not None and CPF in VerifyLogin):
-            messagebox.showerror(title='Erro de Registro!', message="CPF já cadastrado!")
-        elif(VerifyLogin is not None and Login in VerifyLogin):
-            messagebox.showerror(title='Erro de Registro!', message="Loguin já cadastrado!")
-        elif(VerifyLogin is not None and Email in VerifyLogin):
-            messagebox.showerror(title='Erro de Registro!', message="Email Já cadastrado")
-        else:
-            DataBaser.c.execute("""
-            INSERT INTO ALUNOS(null, RA, Nome, CPF, Email, Curso, Login, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?)
-            """, (RA, Nome, CPF, Email, Curso, Login, Senha))
+         
+        Senha = hash_password(Senha) 
+        print(Senha)
+        #Armazena as inforamções em um vetor para o banco de dados usar
+        try: 
+            DataBaser.c.execute("""INSERT INTO ALUNOS VALUES(?,?,?,?,?,?,?) """,
+                                (CPF, RA, Nome, Email, Curso, Login, Senha))
             DataBaser.conexao.commit()
-            messagebox.showinfo(title='Registrado!', message="Ta registrado parceiro!!")
+        except sqlite3.IntegrityError: 
+            messagebox.showerror(title="Erro!", message="Registro já existe")
+
+        # #Se nada falha registra usuario no banco de dados
+        # else:
+        #     DataBaser.c.execute("""
+        #     INSERT INTO ALUNOS(CPF, RA, Nome, Email, Curso, Login, Senha) VALUES( ?, ?, ?, ?, ?, ?, ?)
+        #     """, (CPF, RA, Nome, Email, Curso, Login, Senha))
+        #     #Commita as mudanças para que seja possivel logar imediatamente após o registro
+        #     DataBaser.conexao.commit()
+        #     messagebox.showinfo(title='Registrado!', message="Ta registrado parceiro!!")
 
     Register = tb.Button(main_frame,
                         text="Registrar",
@@ -214,7 +268,7 @@ def Register():
     GoBack = tb.Button(main_frame,
                         text="Voltar",
                         bootstyle="secondary-outline",
-                        command=lambda: Login()
+                        command=lambda: Pagina_Login()
                         )
     GoBack.grid(row=8,column=0,padx=10,pady=5) 
 
@@ -230,7 +284,7 @@ root.title("Teste Comportamental DISC")
 root.geometry("900x500")
 root.resizable(width=False, height=False)   
 #Icone da janela
-icon = PhotoImage(file='bio_logo.png')   
+icon = PhotoImage(file='./bio_logo.png')   
 root.tk.call('wm', 'iconphoto', root._w, icon)
 
 #Imagem Biopark
@@ -257,7 +311,7 @@ descricao.pack(pady=5,padx=10)
 entrar_button = tb.Button(main_frame,
                         text="Continuar",
                         bootstyle="primary-outline",
-                        command=lambda: Login()
+                        command=lambda: Pagina_Login()
                         )
 entrar_button.pack(padx=10,pady=10)
 
