@@ -1,8 +1,6 @@
 
 from tkinter import *
 import ttkbootstrap as tb
-from PIL import Image, ImageTk
-
 
 #--------------------------------------------------------JANELA PRINCIPAL------------------------------------------------------------------
 class Description_Window(tb.Frame):
@@ -23,7 +21,6 @@ class Description_Window(tb.Frame):
         image_label.image = image  # To prevent garbage collection
         canvas = Canvas(root, width=140, height=290)
         canvas.place(x=50,y=100)
-
         # Add the image to the canvas at position (x, y)
         x = 10
         y = 70
@@ -41,8 +38,7 @@ class Description_Window(tb.Frame):
                             wraplength=500,
                             justify=LEFT)
         descricao.pack(pady=5,padx=10)
-
-            
+      
         entrar_button = tb.Button(main_frame,
                                 text="Continuar",
                                 bootstyle="primary-outline",

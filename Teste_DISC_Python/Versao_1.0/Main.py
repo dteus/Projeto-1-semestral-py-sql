@@ -24,7 +24,7 @@ root.title("Teste Comportamental DISC")
 root.geometry("900x500")
 root.resizable(width=False, height=False)   
 
-print(type(View_Description))
+frame = View_Description.Description_Window(root)
 
 #Mantem a Janela
 root.mainloop()
