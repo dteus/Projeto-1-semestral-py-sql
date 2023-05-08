@@ -1,28 +1,29 @@
 import sqlite3
 
-conexao = sqlite3.connect("Cadastro_Alunos.db")
+conexao = sqlite3.connect("Database/Cadastro_Alunos.db")
 
 c = conexao.cursor()
 
 c.execute('''
 CREATE TABLE IF NOT EXISTS ALUNOS (
     CPF TEXT NOT NULL,
-    RA INTEGER NOT NULL,
+    RA TEXT NOT NULL UNIQUE,
     NOME TEXT NOT NULL,
-    EMAIL TEXT NOT NULL,
+    EMAIL TEXT NOT NULL UNIQUE,
     CURSO TEXT NOT NULL,
-    LOGIN TEXT NOT NULL,
+    LOGIN TEXT NOT NULL UNIQUE,
     SENHA TEXT NOT NULL,
     PRIMARY KEY (CPF))
     ''')
 c.execute('''
 CREATE TABLE IF NOT EXISTS HISTORICO (
+    CPF_H TEXT NOT NULL,
     DATA_H TEXT NOT NULL,
     DOMINANTE TEXT NOT NULL,
     INFLUENTE TEXT NOT NULL,
     ESTAVEL TEXT NOT NULL,
     CONFORMADO TEXT NOT NULL,
-    CPF TEXT REFERENCES ALUNOS(CPF)ON DELETE CASCADE)
+    CPF TEXT REFERENCES ALUNOS(CPF))
     ''')
 
 print("Conectado ao banco de dados")

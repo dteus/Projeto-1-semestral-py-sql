@@ -1,6 +1,9 @@
 
+from email import utils
 from tkinter import *
 import ttkbootstrap as tb
+
+from App.Views import View_Login
 
 #--------------------------------------------------------JANELA PRINCIPAL------------------------------------------------------------------
 class Description_Window(tb.Frame):
@@ -13,10 +16,10 @@ class Description_Window(tb.Frame):
     def create_widgets(self):
 
         #Adicionando widgets ao frame MASTER
-        with open('App/Views/View_0_Description/DISC_Description.txt') as f:
+        with open('App/Views/DISC_Description.txt') as f:
             content = f.read()
 
-        image = tb.PhotoImage(file="App/Views/View_0_Description/bio_logo.png")
+        image = tb.PhotoImage(file="App/Views/bio_logo.png")
         image_label = tb.Label(self, image=image)
         image_label.image = image  # To prevent garbage collection
         canvas = Canvas(root, width=140, height=290)
@@ -47,7 +50,8 @@ class Description_Window(tb.Frame):
         entrar_button.pack(padx=10,pady=10)
             
     def on_click(self):
-        print("Button Clicked!")
+        Login_frame = View_Login.Login_Window(self)
+        Login_frame.pack()
 
 root = tb.Window(themename="superhero")
 root.title("DISC-Descrição")

@@ -10,11 +10,13 @@ import ttkbootstrap as tb
 import sys
 import os.path
 # Get the parent directory of the current file
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '.'))
 # Add the parent directory to the sys.path list
 sys.path.append(parent_dir)
-# Now we can import MyClass from utils.py
+
 from utils import View_Description
+
+from utils import View_Login
 
 #--------------------------------------------------------JANELA PRINCIPAL------------------------------------------------------------------
 root = tb.Window(themename="superhero")
@@ -24,7 +26,7 @@ root.title("Teste Comportamental DISC")
 root.geometry("900x500")
 root.resizable(width=False, height=False)   
 
-frame = View_Description.Description_Window(root)
+frame = View_Description(root)
 
 #Mantem a Janela
 root.mainloop()
