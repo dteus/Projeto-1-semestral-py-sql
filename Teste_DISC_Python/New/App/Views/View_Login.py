@@ -1,6 +1,5 @@
 from tkinter import *
 import ttkbootstrap as tb
-import sqlite3 
 from tkinter import messagebox
 #--------------------------------------------------------JANELA PRINCIPAL------------------------------------------------------------------
 class Login_Window(tb.Frame):

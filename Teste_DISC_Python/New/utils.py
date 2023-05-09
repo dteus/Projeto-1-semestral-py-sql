@@ -6,7 +6,10 @@ parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))
 # Add the parent directory to the sys.path list
 sys.path.append(parent_dir)
 
-# Now we can import MyClass from utils.py
-from App.Views import View_Description
 
+# Now we can import MyClass from utils.py
 from App.Views import View_Login
+
+def continuar_login(self):
+    Login_frame = View_Login.Login_Window(self)
+    Login_frame.pack()
